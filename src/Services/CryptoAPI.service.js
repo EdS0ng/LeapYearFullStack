@@ -9,16 +9,21 @@ export class CryptoAPI {
         });
     }
 
-    getPrices(fromCurrencies, to){
+    getPrices(fromCurrencies, to, exchange){
         return this.provider.get("pricemultifull", {
             params:{
                 fsyms:fromCurrencies.join(","),
-                tsyms:to
+                tsyms:to,
+                e:exchange
             }
         });
     }
 
     getCoins(){
         return this.provider.get("all/coinlist");
+    }
+
+    getExchanges(){
+        return this.provider.get("all/exchanges");
     }
 }

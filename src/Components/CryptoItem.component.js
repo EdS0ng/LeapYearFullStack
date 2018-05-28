@@ -8,6 +8,8 @@ export class CryptoItem extends PureComponent {
                 <td>{this.props.data.FROM+" : "+this.props.data.TO}</td>
                 <td>{this.props.data.PRICE}</td>
                 <td>{this.props.data.MARKET}</td>
+                <td>{this.props.data.MKTCAP}</td>
+                <td>{this.props.data["CHANGEPCT"+this.props.pctchange]} %</td>
                 <td>
                     <div className="is-grouped field">
                         <span className="control">

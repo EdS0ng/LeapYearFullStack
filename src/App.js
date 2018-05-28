@@ -21,7 +21,8 @@ class App extends Component {
 		this.state = {
 			currencies : [],
 			availableCurrencies:[],
-			savedPairsRetrieved : false,
+			exchanges:[],
+			currentExchange:"CCCAGG",
 			API : new CryptoAPI(CryptoAPIUrl)
 		}
 	}
@@ -32,6 +33,12 @@ class App extends Component {
                 availableCurrencies : Object.keys(resp.data.Data)
             })
         })
+
+		this.state.API.getExchanges().then(resp=>{
+			this.setState({
+				exchanges:Object.keys(resp.data).filter(ex=> ex !== "CCCAGG")
+			});
+		})
 
 		this.DB.getCurrencyPairs().then(resp=>{
 			this.setState({
@@ -54,6 +61,8 @@ class App extends Component {
 				});
 			})
 		}
+
+		this.input.value = "Select a CryptoCurrency";
 	}
 
 	handleDelete = (pair)=>{
@@ -71,20 +80,38 @@ class App extends Component {
 
 	}
 
+	changeExchange = (ev)=>{
+		this.setState({
+			currentExchange: ev.target.value
+		});
+	}
+
+	//ran out of time for exchange, unfortunately the api returns an error if even one pair is not in exchange
 	render() {
 		return (
 			<React.Fragment>
 				<Header />
-				<div className="container marginTop">
-					<div className="select">
-                        <select ref={(input)=>this.input = input} defaultValue="Select a CryptoCurrency">
-                            <option disabled>Select a CryptoCurrency</option>
-							{this.state.availableCurrencies.map(coin=><option key={coin}>{coin}</option>)}
-                        </select>
-                    </div>
-                    <button className="button is-success" onClick={this.handleAdd}>Save</button>
+				<div className="container marginTop columns">
+					<div className="column">
+						<div className="select">
+							<select ref={(input)=>this.input = input} defaultValue="Select a CryptoCurrency">
+								<option disabled>Select a CryptoCurrency</option>
+								{this.state.availableCurrencies.map(coin=><option key={coin}>{coin}</option>)}
+							</select>
+						</div>
+						<button className="button is-success" onClick={this.handleAdd}>Save</button>
+					</div>
+					<div className="column">
+						<div className="select">
+							<select disabled onChange={this.changeExchange} value={this.state.currentExchange}>
+								<option>CCCAGG</option>
+								{this.state.exchanges.map(ex=><option key={ex}>{ex}</option>)}
+							</select>
+						</div>
+					</div>
 				</div>
-				<CryptoGrid api={this.state.API} currencies={this.state.currencies} onDelete={this.handleDelete}/>
+				<CryptoGrid api={this.state.API} currencies={this.state.currencies} 
+					onDelete={this.handleDelete} exchange={this.state.currentExchange}/>
 			</React.Fragment>
 		)
 	}
